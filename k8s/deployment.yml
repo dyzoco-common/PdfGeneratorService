@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdf-generator-service
+  labels:
+    app: pdf-generator-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pdf-generator-service
+  template:
+    metadata:
+      labels:
+        app: pdf-generator-service
+    spec:
+      containers:
+        - name: pdf-generator-service
+          image: your-registry/pdf-generator-service:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: PdfGeneration__MaxHtmlSizeInKb
+              value: "1024"
+            - name: PdfGeneration__DefaultFormat
+              value: "A4"
+            - name: PdfGeneration__DefaultTimeoutSeconds
+              value: "30"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10

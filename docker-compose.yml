@@ -1,0 +1,18 @@
+# Reference only — not required for local development.
+# Use for cloud deployments or local testing of the Docker image.
+version: "3.9"
+
+services:
+  pdf-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - PdfGeneration__MaxHtmlSizeInKb=1024
+      - PdfGeneration__DefaultFormat=A4
+      - PdfGeneration__DefaultPrintBackground=true
+      - PdfGeneration__DefaultTimeoutSeconds=30
+    restart: unless-stopped

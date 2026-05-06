@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PdfGeneratorService.Api/PdfGeneratorService.Api.csproj" />
+    <Project Path="src/PdfGeneratorService.Application/PdfGeneratorService.Application.csproj" />
+    <Project Path="src/PdfGeneratorService.Domain/PdfGeneratorService.Domain.csproj" />
+    <Project Path="src/PdfGeneratorService.Infrastructure/PdfGeneratorService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PdfGeneratorService.Tests/PdfGeneratorService.Tests.csproj" />
+  </Folder>
+</Solution>
