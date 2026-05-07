@@ -7,8 +7,8 @@ on:
 
 env:
    ACR_LOGIN_SERVER: dyzocolabsacr.azurecr.io
-   IMAGE_NAME: pdf-generator-service
-   APP_SERVICE_NAME: pdf-generator-service
+   IMAGE_NAME: pdfgenapi
+   APP_SERVICE_NAME: dyzoco-pdfgenapi
    RESOURCE_GROUP: rg-dyzoco-common
 
 jobs:
