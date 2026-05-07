@@ -15,18 +15,26 @@ COPY src/ src/
 RUN dotnet publish src/PdfGeneratorService.Api/PdfGeneratorService.Api.csproj \
     -c Release -o /app/publish --no-restore
 
-# ── Runtime stage (Playwright with Chromium) ──────────────────────────────────
-FROM mcr.microsoft.com/playwright/dotnet:v1.59.0-noble AS runtime
-WORKDIR /app
+# ── Runtime stage (.NET 10 + Chromium via Playwright) ─────────────────────────
+  FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble AS runtime
+  WORKDIR /app
 
-ENV ASPNETCORE_URLS=http://+:8080
-ENV ASPNETCORE_ENVIRONMENT=Production
-EXPOSE 8080
+  # Install PowerShell (required by playwright.ps1) and Chromium with its system dependencies
+  RUN apt-get update && \
+      apt-get install -y wget && \
+      wget -q "https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb" -O /tmp/ms-prod.deb && \
+      dpkg -i /tmp/ms-prod.deb && \
+      rm /tmp/ms-prod.deb && \
+      apt-get update && \
+      apt-get install -y powershell && \
+      rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /app/publish .
+  ENV ASPNETCORE_URLS=http://+:8080
+  ENV ASPNETCORE_ENVIRONMENT=Production
+  EXPOSE 8080
 
-# Playwright browsers are pre-installed in the base image
-# Install only chromium to reduce image size
-RUN pwsh /app/playwright.ps1 install chromium --with-deps
+  COPY --from=build /app/publish .
 
-ENTRYPOINT ["dotnet", "PdfGeneratorService.Api.dll"]
+  RUN pwsh /app/playwright.ps1 install chromium --with-deps
+
+  ENTRYPOINT ["dotnet", "PdfGeneratorService.Api.dll"]
