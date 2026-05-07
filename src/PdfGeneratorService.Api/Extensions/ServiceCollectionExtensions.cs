@@ -27,15 +27,12 @@ public static class ServiceCollectionExtensions
     {
         app.UseMiddleware<Middleware.GlobalExceptionMiddleware>();
 
-        if (app.Environment.IsDevelopment())
+        app.MapOpenApi();
+        app.MapScalarApiReference(options =>
         {
-            app.MapOpenApi();
-            app.MapScalarApiReference(options =>
-            {
-                options.Title = "PDF Generator Service";
-                options.Theme = ScalarTheme.Purple;
-            });
-        }
+            options.Title = "PDF Generator Service";
+            options.Theme = ScalarTheme.Purple;
+        });
 
         app.UseHttpsRedirection();
         app.MapControllers();
