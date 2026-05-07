@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY PdfGeneratorService.sln .
+COPY PdfGeneratorService.slnx .
 COPY src/PdfGeneratorService.Api/PdfGeneratorService.Api.csproj                       src/PdfGeneratorService.Api/
 COPY src/PdfGeneratorService.Application/PdfGeneratorService.Application.csproj       src/PdfGeneratorService.Application/
 COPY src/PdfGeneratorService.Domain/PdfGeneratorService.Domain.csproj                 src/PdfGeneratorService.Domain/
