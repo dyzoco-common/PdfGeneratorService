@@ -79,6 +79,17 @@ If a new feature is needed, add it directly in the relevant layer following the 
   ```
 - In Docker, the Playwright base image already includes Chromium.
 
+## Documentation Rules
+
+After completing any change that affects the public API, deployment, or behavior visible to consumers, update `README.md` before considering the task done. Changes that always require a README update:
+
+- New or modified request/response fields
+- New endpoints
+- New environment variables or configuration keys
+- Changes to deployment steps (Docker, Azure, Kubernetes)
+- Changes to Scalar/OpenAPI availability
+- New troubleshooting scenarios
+
 ## Future Modifications
 
 When adding new PDF options (e.g., headers/footers, page ranges):
@@ -87,3 +98,4 @@ When adding new PDF options (e.g., headers/footers, page ranges):
 3. Add to `PdfGenerationRequest` entity if it's a domain concept.
 4. Pass through `PdfService` → `PlaywrightPdfGeneratorService`.
 5. Map to `PagePdfOptions` in `BuildPdfOptions`.
+6. Update `README.md` request body table and add an example if needed.

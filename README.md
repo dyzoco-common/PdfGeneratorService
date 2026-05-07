@@ -70,7 +70,7 @@ The API will be available at: `https://localhost:5001` / `http://localhost:5000`
 
 ## API Documentation (Scalar)
 
-When running in Development mode, Scalar UI is available at:
+Scalar UI is available in all environments at:
 
 ```
 http://localhost:5000/scalar/v1
@@ -107,17 +107,44 @@ curl -X POST http://localhost:5000/api/pdf/generate \
 
 ### Request Body
 
-| Field            | Type    | Required | Default | Description                        |
-|------------------|---------|----------|---------|------------------------------------|
-| `htmlContent`    | string  | Yes      | —       | Full HTML string                   |
-| `fileName`       | string  | No       | auto    | Output file name (sanitized)       |
-| `format`         | string  | No       | A4      | `A4`, `Letter`, `Legal`            |
-| `landscape`      | bool    | No       | false   | Landscape orientation              |
-| `printBackground`| bool    | No       | true    | Include CSS backgrounds            |
-| `marginTop`      | string  | No       | null    | e.g. `20mm`, `1cm`, `15px`        |
-| `marginRight`    | string  | No       | null    |                                    |
-| `marginBottom`   | string  | No       | null    |                                    |
-| `marginLeft`     | string  | No       | null    |                                    |
+| Field            | Type    | Required | Default | Description                                          |
+|------------------|---------|----------|---------|------------------------------------------------------|
+| `htmlContent`    | string  | Yes      | —       | Full HTML string                                     |
+| `fileName`       | string  | No       | auto    | Output file name (sanitized)                         |
+| `format`         | string  | No       | A4      | `A4`, `Letter`, `Legal`. Mutually exclusive with `width` |
+| `width`          | string  | No       | —       | Custom paper width. e.g. `80mm`, `8cm`. Mutually exclusive with `format` |
+| `height`         | string  | No*      | —       | Custom paper height. e.g. `150mm`. Required when `width` is set |
+| `landscape`      | bool    | No       | false   | Landscape orientation                                |
+| `printBackground`| bool    | No       | true    | Include CSS backgrounds                              |
+| `marginTop`      | string  | No       | null    | e.g. `20mm`, `1cm`, `15px`                          |
+| `marginRight`    | string  | No       | null    |                                                      |
+| `marginBottom`   | string  | No       | null    |                                                      |
+| `marginLeft`     | string  | No       | null    |                                                      |
+
+> **`format` vs `width`/`height`:** Use `format` for standard paper sizes (A4, Letter, Legal). Use `width` + `height` for custom dimensions such as POS receipt printers. Both cannot be sent in the same request.
+
+### POS / Custom Paper Size Example
+
+For thermal receipt printers (80mm roll):
+
+```bash
+curl -X POST http://localhost:5000/api/pdf/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "htmlContent": "<html><body><p>Receipt content here</p></body></html>",
+    "fileName": "receipt",
+    "width": "80mm",
+    "height": "150mm",
+    "printBackground": true,
+    "marginTop": "5mm",
+    "marginRight": "5mm",
+    "marginBottom": "5mm",
+    "marginLeft": "5mm"
+  }' \
+  --output receipt.pdf
+```
+
+Common widths: `80mm` (standard roll), `58mm` (narrow roll). Set `height` to match the expected receipt length, or use a generous value — content will not overflow beyond it.
 
 ### Response
 

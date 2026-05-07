@@ -68,10 +68,19 @@ public sealed class PlaywrightPdfGeneratorService : IPdfGeneratorService, IAsync
     {
         var options = new PagePdfOptions
         {
-            Format = request.Format.Value,
             Landscape = request.Landscape,
             PrintBackground = request.PrintBackground,
         };
+
+        if (request.Width is not null)
+        {
+            options.Width = request.Width;
+            options.Height = request.Height;
+        }
+        else
+        {
+            options.Format = request.Format!.Value;
+        }
 
         var m = request.Margins;
         if (m.Top is not null || m.Right is not null || m.Bottom is not null || m.Left is not null)

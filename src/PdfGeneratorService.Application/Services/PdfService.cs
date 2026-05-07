@@ -49,17 +49,20 @@ public sealed class PdfService
             throw new ValidationException("htmlContent",
                 $"htmlContent exceeds the maximum allowed size of {_options.MaxHtmlSizeInKb} KB.");
 
+        var formatOrDefault = dto.Width is null ? (dto.Format ?? _options.DefaultFormat) : null;
         var request = PdfGenerationRequest.Create(
             dto.HtmlContent,
             dto.FileName,
-            dto.Format ?? _options.DefaultFormat,
+            formatOrDefault,
+            dto.Width,
+            dto.Height,
             dto.Landscape ?? false,
             dto.PrintBackground ?? _options.DefaultPrintBackground,
             new PdfMargins(dto.MarginTop, dto.MarginRight, dto.MarginBottom, dto.MarginLeft));
 
         _logger.LogInformation(
-            "Starting PDF generation. Format={Format}, Landscape={Landscape}, PrintBackground={PrintBackground}",
-            request.Format, request.Landscape, request.PrintBackground);
+            "Starting PDF generation. Format={Format}, Width={Width}, Height={Height}, Landscape={Landscape}, PrintBackground={PrintBackground}",
+            request.Format, request.Width, request.Height, request.Landscape, request.PrintBackground);
 
         var sw = Stopwatch.StartNew();
         var bytes = await _generator.GenerateAsync(request, cancellationToken);
