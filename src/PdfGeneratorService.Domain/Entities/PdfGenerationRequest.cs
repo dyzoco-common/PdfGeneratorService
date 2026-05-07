@@ -56,13 +56,18 @@ public sealed class PdfGenerationRequest
             margins);
     }
 
+    // Fixed cross-platform set — uses Windows-invalid chars as the most restrictive baseline.
+    // Path.GetInvalidFileNameChars() omits ':' on Linux, which would produce filenames
+    // invalid on Windows and inconsistent across environments.
+    private static readonly HashSet<char> InvalidFileNameChars =
+        [.. Path.GetInvalidFileNameChars(), ':', '*', '?', '"', '<', '>', '|', '\\'];
+
     private static string SanitizeFileName(string? fileName)
     {
         if (string.IsNullOrWhiteSpace(fileName))
             return $"document-{DateTime.UtcNow:yyyyMMddHHmmss}.pdf";
 
-        var invalid = Path.GetInvalidFileNameChars();
-        var sanitized = string.Concat(fileName.Select(c => invalid.Contains(c) ? '_' : c));
+        var sanitized = string.Concat(fileName.Select(c => InvalidFileNameChars.Contains(c) ? '_' : c));
 
         if (!sanitized.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
             sanitized += ".pdf";
