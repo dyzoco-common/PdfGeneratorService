@@ -146,6 +146,74 @@ curl -X POST http://localhost:5000/api/pdf/generate \
 
 Common widths: `80mm` (standard roll), `58mm` (narrow roll). Set `height` to match the expected receipt length, or use a generous value — content will not overflow beyond it.
 
+### Page Breaks
+
+Page breaks are controlled entirely from the HTML/CSS inside `htmlContent`. No additional API parameters are needed — Playwright renders the page in print mode and honours standard CSS paging properties.
+
+**Force a page break before a section:**
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  .nueva-pagina {
+    break-before: page;        /* modern standard */
+    page-break-before: always; /* fallback */
+  }
+</style>
+</head>
+<body>
+
+  <!-- Page 1: partial content, does not need to fill the sheet -->
+  <div>
+    <h1>Invoice Header</h1>
+    <p>Client: Juan Pérez</p>
+    <p>Date: 2026-05-07</p>
+  </div>
+
+  <!-- Page 2: starts on a new sheet regardless of how much space was left -->
+  <div class="nueva-pagina">
+    <h2>Product Detail</h2>
+    <table>...</table>
+  </div>
+
+</body>
+</html>
+```
+
+**Prevent a block from splitting across pages:**
+
+```css
+.no-split {
+  break-inside: avoid;
+}
+```
+
+Useful for table rows, cards, or any block that should never be cut mid-page.
+
+**Repeat a header on every page:**
+
+```css
+.page-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+```
+
+**CSS reference:**
+
+| Property | Effect |
+|---|---|
+| `break-before: page` | Force a new page before the element |
+| `break-after: page` | Force a new page after the element |
+| `break-inside: avoid` | Prevent the element from splitting across pages |
+| `position: fixed; top: 0` | Repeat content on every page (headers/footers) |
+
+> **Important:** Always send a complete HTML document with `<!DOCTYPE html>`, `<html>`, `<head>`, and `<body>`. Chromium may ignore CSS paging rules on partial/malformed HTML. Apply `break-before: page` on the element that *starts* a new page — not `break-after` on an empty separator element, which Chromium collapses and ignores.
+
 ### Response
 
 - `200 OK` — `Content-Type: application/pdf` with binary PDF data
